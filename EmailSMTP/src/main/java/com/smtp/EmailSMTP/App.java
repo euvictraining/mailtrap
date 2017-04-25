@@ -1,7 +1,10 @@
 package com.smtp.EmailSMTP;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -13,17 +16,21 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-/**
- * Hello world!
- *
- */
+
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws FileNotFoundException
     {
-    	final String username = "smtpfakemail93@gmail.com";
-        final String password = "1q2w3e4r!";
-        String msgToSent = "This is my first mail using SMTP";
+    	
+    	String tmp; //variable needed to get user data from text file
+    	Scanner in;		
+		in = new Scanner(new File("properties.txt"));		
+    	tmp = in.nextLine(); 				
+		final String username = tmp.substring(10); //get all characters after "smtp.user="
+		tmp = in.nextLine();	
+		final String password = tmp.substring(14); //get all characters after "smtp.password="
+        final String msgToSend = "This is my first mail using SMTP";
+        
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
@@ -38,25 +45,19 @@ public class App
        
         Message message = new MimeMessage(session);
        
-            try {
-				message.setFrom(new InternetAddress(username));
-			
-           
-				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username));
-				message.setSubject("Testing");
-		        message.setText(msgToSent);
+       try {
+				message.setFrom(new InternetAddress(username));	   //who sends the email        
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username)); //who gets the email
+				message.setSubject("Testing"); //set Title of the message
+		        message.setText(msgToSend);  // set content of the email
 		        Transport.send(message);
-			} catch (AddressException e) {
-				// TODO Auto-generated catch block
+			} catch (AddressException e) {				
 				e.printStackTrace();
-			} catch (MessagingException e) {
-				// TODO Auto-generated catch block
+			} catch (MessagingException e) {				
 				e.printStackTrace();
 			}
-           
-            
        
-        System.out.println("Following email was sent: " + "'" + msgToSent + "'");
+        System.out.println("Following email was sent: " + "'" + msgToSend + "'");
     }   
     
 }
