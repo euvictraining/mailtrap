@@ -1,0 +1,2 @@
+smtp.user=smtpfakemail93@gmail.com
+smtp.password=1q2w3e4r!
