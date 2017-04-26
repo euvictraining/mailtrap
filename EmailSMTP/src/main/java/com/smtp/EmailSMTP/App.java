@@ -1,10 +1,11 @@
 package com.smtp.EmailSMTP;
 
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
-import java.util.Scanner;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -23,30 +24,36 @@ public class App
     public static void main( String[] args ) throws FileNotFoundException
     {
     	
-    	String tmp; //variable needed to get user data from text file
-    	Scanner in;		
-		in = new Scanner(new File("properties.txt"));		
-    	tmp = in.nextLine(); 				
-		final String username = tmp.substring(10); //get all characters after "smtp.user="
-		tmp = in.nextLine();	
-		final String password = tmp.substring(14); //get all characters after "smtp.password="
-        final String msgToSend = "This is my first mail using SMTP";
-        
+    	final String msgToSend = "This is my first mail using SMTP";
+    	final Properties prop = new Properties();
+    	InputStream input = null;
+
+		// load a properties file
+    	input = new FileInputStream("properties");    		
+    	try {
+			prop.load(input);
+		} catch (IOException e1) {			
+			e1.printStackTrace();
+		} 
+    	// get the username value
+    	final String username = (prop.getProperty("smtp.user"));
+    	
+    	
         Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", prop.getProperty("mail.smtp.auth"));
+        properties.put("mail.smtp.starttls.enable", prop.getProperty("mail.smtp.starttls.enable"));
+        properties.put("mail.smtp.host", prop.getProperty("mail.smtp.host"));
+        properties.put("mail.smtp.port", prop.getProperty("mail.smtp.port"));
         
         Session session = Session.getInstance(properties, new Authenticator(){
             protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication(username, password);
+                return new PasswordAuthentication(username, prop.getProperty("smtp.password"));
             };
         });
        
         Message message = new MimeMessage(session);
       
-       try {
+        try {
 				message.setFrom(new InternetAddress(username));	   //who sends the email        
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username)); //who gets the email
 				message.setSubject("Testing"); //set Title of the message
