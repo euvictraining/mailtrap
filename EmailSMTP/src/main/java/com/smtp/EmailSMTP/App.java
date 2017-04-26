@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Properties;
 import java.util.Scanner;
-
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -15,6 +14,8 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import org.apache.log4j.Logger;
 
 
 public class App 
@@ -44,7 +45,7 @@ public class App
         });
        
         Message message = new MimeMessage(session);
-       
+      
        try {
 				message.setFrom(new InternetAddress(username));	   //who sends the email        
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(username)); //who gets the email
@@ -56,8 +57,9 @@ public class App
 			} catch (MessagingException e) {				
 				e.printStackTrace();
 			}
+       Logger logger = Logger.getLogger(App.class);
+       logger.info("Following email was sent: " + "'" + msgToSend + "'");
        
-        System.out.println("Following email was sent: " + "'" + msgToSend + "'");
     }   
     
 }
